@@ -18,11 +18,11 @@
 -(void)pluginInitialize
 {
     self.IOS_API_KEY = [[self.commandDelegate settings] objectForKey:@"ios_api_key"];
-    
+
     [AMapServices sharedServices].apiKey =self.IOS_API_KEY;
     // 带逆地理信息的一次定位（返回坐标和地址信息）
     [self configLocationManager];
-    
+
 }
 - (void)getCurrentPosition:(CDVInvokedUrlCommand*)command
 {
@@ -33,13 +33,13 @@
 - (void)configLocationManager
 {
     self.locationManager = [[AMapLocationManager alloc] init];
-    
+
     [self.locationManager setDelegate: self];
-    
+
     [self.locationManager setDesiredAccuracy:kCLLocationAccuracyHundredMeters];
-    
+
     [self.locationManager setLocationTimeout:6];
-    
+
     [self.locationManager setReGeocodeTimeout:3];
 }
 
@@ -47,20 +47,20 @@
 {
     //带逆地理的单次定位
     [self.locationManager requestLocationWithReGeocode:YES completionBlock:^(CLLocation *location, AMapLocationReGeocode *regeocode, NSError *error) {
-        
+
         if (error)
         {
             NSLog(@"locError:{%ld - %@};", (long)error.code, error.localizedDescription);
-            
+
             if (error.code == AMapLocationErrorLocateFailed)
             {
                 return;
             }
         }
-        
+
         //定位信息
         NSLog(@"location:%@", location);
-        
+
         //逆地理信息
         if (regeocode)
         {
@@ -72,14 +72,15 @@
             [mDict setObject:[NSString stringWithFormat:@"%g",location.horizontalAccuracy] forKey:@"accuracy"];
             //        [mDict setObject:[NSString stringWithFormat:@"%g",location.bearing] forKey:@"bearing"];
             //        [mDict setObject:@"one2" forKey:@"satellites"];
-            [mDict setObject:regeocode.country forKey:@"country"];
-            [mDict setObject:regeocode.province forKey:@"province"];
-            [mDict setObject:regeocode.city forKey:@"city"];
-            [mDict setObject:regeocode.citycode forKey:@"citycode"];
-            [mDict setObject:regeocode.district forKey:@"district"];
-            [mDict setObject:regeocode.adcode forKey:@"adcode"];
-            [mDict setObject:regeocode.formattedAddress forKey:@"address"];
-            [mDict setObject:regeocode.POIName forKey:@"poi"];
+            // 注释下面的代码，因为真机测试会报错，改为只要gps信息 by liangchao
+            // [mDict setObject:regeocode.country forKey:@"country"];
+            // [mDict setObject:regeocode.province forKey:@"province"];
+            // [mDict setObject:regeocode.city forKey:@"city"];
+            // [mDict setObject:regeocode.citycode forKey:@"citycode"];
+            // [mDict setObject:regeocode.district forKey:@"district"];
+            // [mDict setObject:regeocode.adcode forKey:@"adcode"];
+            // [mDict setObject:regeocode.formattedAddress forKey:@"address"];
+            // [mDict setObject:regeocode.POIName forKey:@"poi"];
             //        [mDict setObject:
             //         location.timestamp
             //          forKey:@"time"];
